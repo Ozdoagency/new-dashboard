@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, ReferenceLine } from 'recharts';
 import { ArrowUpRight, ArrowDownRight, DollarSign, Globe, UserCheck, Calculator, BarChart, Wallet, UserCog, LucideIcon } from 'lucide-react';
 import '../styles/MetricsDashboard.css';

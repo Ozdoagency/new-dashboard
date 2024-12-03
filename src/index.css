@@ -39,7 +39,7 @@ body {
   background-color: #ffffff;
 }
 
-.bg-white/80 {
+.bg-white-80 {
   background-color: rgba(255, 255, 255, 0.8);
 }
 
@@ -155,7 +155,7 @@ body {
   height: 100vh;
 }
 
-.min-w-[45%] {
+.min-w-45 {
   min-width: 45%;
 }
 
