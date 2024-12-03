@@ -1,0 +1,12 @@
+{
+  "dependencies": {
+    "@vitejs/plugin-react": "^4.3.4",
+    "lucide-react": "^0.464.0",
+    "recharts": "^2.14.1",
+    "vite": "^6.0.2"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build"
+  }
+}
