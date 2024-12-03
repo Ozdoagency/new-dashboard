@@ -1,6 +1,7 @@
 import { useState, useMemo, useEffect } from 'react';
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, ReferenceLine } from 'recharts';
 import { ArrowUpRight, ArrowDownRight, DollarSign, Globe, UserCheck, Calculator, BarChart, Wallet, UserCog, LucideIcon } from 'lucide-react';
+import './MetricsDashboard.css';
 
 interface MetricData {
   date: string;
@@ -235,9 +236,9 @@ const MetricsDashboard: React.FC = () => {
 
   return (
     <div className="metrics-dashboard">
-      <div className="metrics-dashboard__header">
-        <h1 className="metrics-dashboard__title">{t.title}</h1>
-        <div className="metrics-dashboard__language-selector">
+      <div className="header">
+        <h1>{t.title}</h1>
+        <div className="language-selector">
           <Globe className="w-4 h-4 text-blue-600" />
           <select
             value={lang}
@@ -251,48 +252,41 @@ const MetricsDashboard: React.FC = () => {
         </div>
       </div>
 
-      <div className="metrics-dashboard__content">
-        <div className="metrics-dashboard__filters">
-          <div className="flex gap-4">
-            <select
-              className="metrics-dashboard__filters-select"
-              value={startIdx}
-              onChange={e => setStartIdx(Number(e.target.value))}
-            >
-              {data.map((_, idx) => (
-                <option key={idx} value={idx}>{data[idx].date}</option>
-              ))}
-            </select>
-            <select
-              className="metrics-dashboard__filters-select"
-              value={endIdx}
-              onChange={e => setEndIdx(Number(e.target.value))}
-            >
-              {data.map((_, idx) => (
-                <option key={idx} value={idx}>{data[idx].date}</option>
-              ))}
-            </select>
-          </div>
-          <div className="flex items-center gap-2">
-            <label className="text-sm text-gray-600">{t.average}:</label>
-            <input
-              type="checkbox"
-              checked={showAverage}
-              onChange={(e) => setShowAverage(e.target.checked)}
-              className="rounded border-gray-300"
-            />
-          </div>
+      <div className="content">
+        <div className="date-selector">
+          <select
+            value={startIdx}
+            onChange={e => setStartIdx(Number(e.target.value))}
+          >
+            {data.map((_, idx) => (
+              <option key={idx} value={idx}>{data[idx].date}</option>
+            ))}
+          </select>
+          <select
+            value={endIdx}
+            onChange={e => setEndIdx(Number(e.target.value))}
+          >
+            {data.map((_, idx) => (
+              <option key={idx} value={idx}>{data[idx].date}</option>
+            ))}
+          </select>
+        </div>
+        <div className="flex items-center gap-2">
+          <label className="text-sm text-gray-600">{t.average}:</label>
+          <input
+            type="checkbox"
+            checked={showAverage}
+            onChange={(e) => setShowAverage(e.target.checked)}
+            className="rounded border-gray-300"
+          />
         </div>
 
-        <div className="metrics-dashboard__metric-buttons">
+        <div className="metric-buttons">
           {Object.entries(metrics).map(([key, { name, icon: Icon }]) => (
             <button
               key={key}
               onClick={() => handleMetricChange(key as MetricKey)}
-              className={`
-                metrics-dashboard__metric-button
-                ${activeMetric === key ? 'metrics-dashboard__metric-button--active' : ''}
-              `}
+              className={`metric-button ${activeMetric === key ? 'active' : ''}`}
             >
               <Icon className="w-4 h-4" />
               <span className="text-xs">{name}</span>
@@ -300,7 +294,7 @@ const MetricsDashboard: React.FC = () => {
           ))}
         </div>
 
-        <div className="metrics-dashboard__chart">
+        <div className="chart">
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={filteredData}>
               <XAxis dataKey="date" stroke="#1e40af" fontSize={isMobile ? 10 : 12} />
@@ -327,7 +321,7 @@ const MetricsDashboard: React.FC = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-2 md:grid-cols-6 gap-4">
+      <div className="metric-cards">
         {Object.entries(metrics).map(([key, { name, color, icon: Icon, format }]) => {
           const keyAsMetric = key as MetricKey;
           const latestValue = filteredData[filteredData.length - 1]?.[keyAsMetric] ?? 0;
@@ -336,9 +330,9 @@ const MetricsDashboard: React.FC = () => {
           const isPositive = Number(change) > 0;
 
           return (
-            <div key={key} className="metrics-dashboard__metric-card">
-              <div className="metrics-dashboard__metric-card-header">
-                <div className="metrics-dashboard__metric-card-icon" style={{ backgroundColor: `${color}15` }}>
+            <div key={key} className="metric-card">
+              <div className="icon-wrapper">
+                <div className="icon" style={{ backgroundColor: `${color}15` }}>
                   <Icon className="w-4 h-4" style={{ color }} />
                 </div>
                 {isPositive ?
@@ -346,11 +340,11 @@ const MetricsDashboard: React.FC = () => {
                   <ArrowDownRight className="w-4 h-4 text-red-600" />
                 }
               </div>
-              <div className="metrics-dashboard__metric-card-name">{name}</div>
-              <div className="metrics-dashboard__metric-card-value" style={{ color }}>
+              <div className="metric-name">{name}</div>
+              <div className="metric-value" style={{ color }}>
                 {format(latestValue)}
               </div>
-              <div className={`metrics-dashboard__metric-card-change ${isPositive ? 'text-green-600' : 'text-red-600'}`}>
+              <div className={`metric-change ${isPositive ? 'positive' : 'negative'}`}>
                 {isPositive ? '↑' : '↓'} {Math.abs(change)}%
               </div>
               <div className="h-8 mt-2">
@@ -365,8 +359,8 @@ const MetricsDashboard: React.FC = () => {
         })}
       </div>
 
-      <div className="metrics-dashboard__footer">
-        {t.madeIn} <span className="font-semibold text-blue-600">OZDO AI</span>
+      <div className="footer">
+        {t.madeIn} <span className="made-in">OZDO AI</span>
       </div>
     </div>
   );
