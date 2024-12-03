@@ -9,7 +9,7 @@ interface MetricData {
   leadCost: number;
   cr: number;
   quals: number;
-  qualCost: number; // Добавляем поле qualCost
+  qualCost: number;
 }
 
 type Lang = 'en' | 'uk' | 'ru';
@@ -203,7 +203,7 @@ const MetricsDashboard: React.FC = () => {
       icon: Wallet,
       format: (val: MetricValue) => `₴${val.toFixed(2)}`
     },
-    quals: {            // изменено с quals на quals
+    quals: {
       name: t.metrics.quals,
       color: '#172554',
       icon: UserCheck,
@@ -217,7 +217,6 @@ const MetricsDashboard: React.FC = () => {
     }
   };
 
-  // Обновляем функцию getAverageValue с правильной типизацией
   const getAverageValue = (data: MetricData[], key: MetricKey): number => {
     const validData = data.filter(item => typeof item[key] === 'number');
     return validData.length > 0
