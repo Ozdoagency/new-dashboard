@@ -14,6 +14,13 @@ export default defineConfig(async () => {
         exclude: 'node_modules/**'
       })
     ],
+    css: {
+      preprocessorOptions: {
+        css: {
+          additionalData: `@import "./src/styles/MetricsDashboard.css";`
+        }
+      }
+    }
   };
 });
 
