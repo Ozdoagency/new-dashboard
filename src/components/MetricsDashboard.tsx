@@ -170,6 +170,7 @@ const MetricsDashboard: React.FC = () => {
     return (
       <div className="w-full h-screen flex items-center justify-center">
         <div className="text-blue-600">No data available</div>
+        <pre>{JSON.stringify(data, null, 2)}</pre> {/* Добавьте этот вывод для отладки */}
       </div>
     );
   }
