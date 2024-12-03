@@ -150,6 +150,31 @@ const MetricsDashboard: React.FC = () => {
     loadData();
   }, []);
 
+  if (loading) {
+    return (
+      <div className="w-full h-screen flex items-center justify-center">
+        <div className="text-blue-600">Loading data...</div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="w-full h-screen flex items-center justify-center">
+        <div className="text-red-600">Error: {error}</div>
+      </div>
+    );
+  }
+
+  if (!data || data.length === 0) {
+    return (
+      <div className="w-full h-screen flex items-center justify-center">
+        <div className="text-blue-600">No data available</div>
+        <pre>{JSON.stringify(data, null, 2)}</pre> {/* Добавьте этот вывод для отладки */}
+      </div>
+    );
+  }
+
   const isMobile = width < 768;
   const t = translations[lang];
   const filteredData = useMemo(() => data.slice(startIdx, endIdx + 1), [startIdx, endIdx, data]);
@@ -208,36 +233,11 @@ const MetricsDashboard: React.FC = () => {
     setActiveMetric(key);
   };
 
-  if (loading) {
-    return (
-      <div className="w-full h-screen flex items-center justify-center">
-        <div className="text-blue-600">Loading data...</div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="w-full h-screen flex items-center justify-center">
-        <div className="text-red-600">Error: {error}</div>
-      </div>
-    );
-  }
-
-  if (!data || data.length === 0) {
-    return (
-      <div className="w-full h-screen flex items-center justify-center">
-        <div className="text-blue-600">No data available</div>
-        <pre>{JSON.stringify(data, null, 2)}</pre> {/* Добавьте этот вывод для отладки */}
-      </div>
-    );
-  }
-
   return (
-    <div className="w-full space-y-4 bg-blue-500 p-2 sm:p-6 rounded-xl">
-      <div className="flex justify-between items-center">
-        <h1 className={`font-bold text-blue-900 ${isMobile ? 'text-lg' : 'text-2xl'}`}>{t.title}</h1>
-        <div className="flex items-center gap-2 bg-blue-50 p-2 rounded-lg">
+    <div className="metrics-dashboard">
+      <div className="metrics-dashboard__header">
+        <h1 className="metrics-dashboard__title">{t.title}</h1>
+        <div className="metrics-dashboard__language-selector">
           <Globe className="w-4 h-4 text-blue-600" />
           <select
             value={lang}
@@ -251,89 +251,83 @@ const MetricsDashboard: React.FC = () => {
         </div>
       </div>
 
-      <div className="bg-white/80 backdrop-blur shadow-lg rounded-lg">
-        <div className="pb-2 border-b p-4">
-          <div className={`flex ${isMobile ? 'flex-col' : 'flex-row justify-between'} gap-4`}>
-            <div className={`flex ${isMobile ? 'flex-col' : 'flex-row'} gap-4`}>
-              <select
-                className="p-2 border rounded bg-white"
-                value={startIdx}
-                onChange={e => setStartIdx(Number(e.target.value))}
-              >
-                {data.map((_, idx) => (
-                  <option key={idx} value={idx}>{data[idx].date}</option>
-                ))}
-              </select>
-              <select
-                className="p-2 border rounded bg-white"
-                value={endIdx}
-                onChange={e => setEndIdx(Number(e.target.value))}
-              >
-                {data.map((_, idx) => (
-                  <option key={idx} value={idx}>{data[idx].date}</option>
-                ))}
-              </select>
-            </div>
-            <div className="flex items-center gap-2">
-              <label className="text-sm text-gray-600">{t.average}:</label>
-              <input
-                type="checkbox"
-                checked={showAverage}
-                onChange={(e) => setShowAverage(e.target.checked)}
-                className="rounded border-gray-300"
-              />
-            </div>
+      <div className="metrics-dashboard__content">
+        <div className="metrics-dashboard__filters">
+          <div className="flex gap-4">
+            <select
+              className="metrics-dashboard__filters-select"
+              value={startIdx}
+              onChange={e => setStartIdx(Number(e.target.value))}
+            >
+              {data.map((_, idx) => (
+                <option key={idx} value={idx}>{data[idx].date}</option>
+              ))}
+            </select>
+            <select
+              className="metrics-dashboard__filters-select"
+              value={endIdx}
+              onChange={e => setEndIdx(Number(e.target.value))}
+            >
+              {data.map((_, idx) => (
+                <option key={idx} value={idx}>{data[idx].date}</option>
+              ))}
+            </select>
+          </div>
+          <div className="flex items-center gap-2">
+            <label className="text-sm text-gray-600">{t.average}:</label>
+            <input
+              type="checkbox"
+              checked={showAverage}
+              onChange={(e) => setShowAverage(e.target.checked)}
+              className="rounded border-gray-300"
+            />
           </div>
         </div>
-        <div className={isMobile ? 'p-2' : 'p-6'}>
-          <div className="space-y-6">
-            <div className={`bg-blue-50 p-1 rounded-lg flex flex-wrap gap-1 ${isMobile ? 'justify-between' : ''}`}>
-              {Object.entries(metrics).map(([key, { name, icon: Icon }]) => (
-                <button
-                  key={key}
-                  onClick={() => handleMetricChange(key as MetricKey)}
-                  className={`
-                    flex items-center gap-2 px-3 py-2 rounded-md
-                    ${isMobile ? 'flex-1 min-w-[45%] justify-center' : ''}
-                    ${activeMetric === key ? 'bg-blue-600 text-white' : 'text-blue-600 hover:bg-blue-100'}
-                  `}
-                >
-                  <Icon className={isMobile ? 'w-4 h-4' : 'w-5 h-5'} />
-                  <span className={isMobile ? 'text-xs' : 'text-sm'}>{name}</span>
-                </button>
-              ))}
-            </div>
 
-            <div className={isMobile ? 'h-64' : 'h-96'}>
-              <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={filteredData}>
-                  <XAxis dataKey="date" stroke="#1e40af" fontSize={isMobile ? 10 : 12} />
-                  <YAxis stroke="#1e40af" width={40} fontSize={isMobile ? 10 : 12} />
-                  <Tooltip />
-                  {!isMobile && <Legend />}
-                  {showAverage && (
-                    <ReferenceLine
-                      y={getAverageValue(filteredData, activeMetric)}
-                      stroke="#94a3b8"
-                      strokeDasharray="3 3"
-                    />
-                  )}
-                  <Line
-                    type="monotone"
-                    dataKey={activeMetric}
-                    stroke={metrics[activeMetric].color}
-                    strokeWidth={isMobile ? 1.5 : 2}
-                    dot={{ r: isMobile ? 3 : 4 }}
-                    activeDot={{ r: isMobile ? 5 : 6 }}
-                  />
-                </LineChart>
-              </ResponsiveContainer>
-            </div>
-          </div>
+        <div className="metrics-dashboard__metric-buttons">
+          {Object.entries(metrics).map(([key, { name, icon: Icon }]) => (
+            <button
+              key={key}
+              onClick={() => handleMetricChange(key as MetricKey)}
+              className={`
+                metrics-dashboard__metric-button
+                ${activeMetric === key ? 'metrics-dashboard__metric-button--active' : ''}
+              `}
+            >
+              <Icon className="w-4 h-4" />
+              <span className="text-xs">{name}</span>
+            </button>
+          ))}
+        </div>
+
+        <div className="metrics-dashboard__chart">
+          <ResponsiveContainer width="100%" height="100%">
+            <LineChart data={filteredData}>
+              <XAxis dataKey="date" stroke="#1e40af" fontSize={isMobile ? 10 : 12} />
+              <YAxis stroke="#1e40af" width={40} fontSize={isMobile ? 10 : 12} />
+              <Tooltip />
+              {!isMobile && <Legend />}
+              {showAverage && (
+                <ReferenceLine
+                  y={getAverageValue(filteredData, activeMetric)}
+                  stroke="#94a3b8"
+                  strokeDasharray="3 3"
+                />
+              )}
+              <Line
+                type="monotone"
+                dataKey={activeMetric}
+                stroke={metrics[activeMetric].color}
+                strokeWidth={isMobile ? 1.5 : 2}
+                dot={{ r: isMobile ? 3 : 4 }}
+                activeDot={{ r: isMobile ? 5 : 6 }}
+              />
+            </LineChart>
+          </ResponsiveContainer>
         </div>
       </div>
 
-      <div className={`grid ${isMobile ? 'grid-cols-2' : 'grid-cols-6'} gap-4`}>
+      <div className="grid grid-cols-2 md:grid-cols-6 gap-4">
         {Object.entries(metrics).map(([key, { name, color, icon: Icon, format }]) => {
           const keyAsMetric = key as MetricKey;
           const latestValue = filteredData[filteredData.length - 1]?.[keyAsMetric] ?? 0;
@@ -342,40 +336,36 @@ const MetricsDashboard: React.FC = () => {
           const isPositive = Number(change) > 0;
 
           return (
-            <div key={key} className="bg-white/80 backdrop-blur hover:scale-105 transition-transform rounded-lg">
-              <div className={isMobile ? 'p-3' : 'p-6'}>
-                <div className="flex items-center justify-between">
-                  <div className="p-2 rounded-lg" style={{ backgroundColor: `${color}15` }}>
-                    <Icon className={isMobile ? 'w-4 h-4' : 'w-5 h-5'} style={{ color }} />
-                  </div>
-                  {isPositive ?
-                    <ArrowUpRight className={`${isMobile ? 'w-4 h-4' : 'w-5 h-5'} text-green-600`} /> :
-                    <ArrowDownRight className={`${isMobile ? 'w-4 h-4' : 'w-5 h-5'} text-red-600`} />
-                  }
+            <div key={key} className="metrics-dashboard__metric-card">
+              <div className="metrics-dashboard__metric-card-header">
+                <div className="metrics-dashboard__metric-card-icon" style={{ backgroundColor: `${color}15` }}>
+                  <Icon className="w-4 h-4" style={{ color }} />
                 </div>
-                <div className="mt-4">
-                  <div className={`${isMobile ? 'text-xs' : 'text-sm'} text-gray-500`}>{name}</div>
-                  <div className={`${isMobile ? 'text-lg' : 'text-xl'} font-bold mt-1`} style={{ color }}>
-                    {format(latestValue)}
-                  </div>
-                  <div className={`${isMobile ? 'text-xs' : 'text-sm'} mt-1 ${isPositive ? 'text-green-600' : 'text-red-600'}`}>
-                    {isPositive ? '↑' : '↓'} {Math.abs(change)}%
-                  </div>
-                  <div className="h-8 mt-2">
-                    <SparkLine
-                      data={filteredData.slice(-7)}
-                      dataKey={key as MetricKey}
-                      color={color}
-                    />
-                  </div>
-                </div>
+                {isPositive ?
+                  <ArrowUpRight className="w-4 h-4 text-green-600" /> :
+                  <ArrowDownRight className="w-4 h-4 text-red-600" />
+                }
+              </div>
+              <div className="metrics-dashboard__metric-card-name">{name}</div>
+              <div className="metrics-dashboard__metric-card-value" style={{ color }}>
+                {format(latestValue)}
+              </div>
+              <div className={`metrics-dashboard__metric-card-change ${isPositive ? 'text-green-600' : 'text-red-600'}`}>
+                {isPositive ? '↑' : '↓'} {Math.abs(change)}%
+              </div>
+              <div className="h-8 mt-2">
+                <SparkLine
+                  data={filteredData.slice(-7)}
+                  dataKey={key as MetricKey}
+                  color={color}
+                />
               </div>
             </div>
           );
         })}
       </div>
 
-      <div className="text-center text-sm text-gray-500">
+      <div className="metrics-dashboard__footer">
         {t.madeIn} <span className="font-semibold text-blue-600">OZDO AI</span>
       </div>
     </div>
