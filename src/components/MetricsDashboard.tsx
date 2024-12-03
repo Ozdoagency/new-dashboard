@@ -150,31 +150,6 @@ const MetricsDashboard: React.FC = () => {
     loadData();
   }, []);
 
-  if (loading) {
-    return (
-      <div className="w-full h-screen flex items-center justify-center">
-        <div className="text-blue-600">Loading data...</div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="w-full h-screen flex items-center justify-center">
-        <div className="text-red-600">Error: {error}</div>
-      </div>
-    );
-  }
-
-  if (!data || data.length === 0) {
-    return (
-      <div className="w-full h-screen flex items-center justify-center">
-        <div className="text-blue-600">No data available</div>
-        <pre>{JSON.stringify(data, null, 2)}</pre> {/* Добавьте этот вывод для отладки */}
-      </div>
-    );
-  }
-
   const isMobile = width < 768;
   const t = translations[lang];
   const filteredData = useMemo(() => data.slice(startIdx, endIdx + 1), [startIdx, endIdx, data]);
@@ -232,6 +207,31 @@ const MetricsDashboard: React.FC = () => {
   const handleMetricChange = (key: MetricKey) => {
     setActiveMetric(key);
   };
+
+  if (loading) {
+    return (
+      <div className="w-full h-screen flex items-center justify-center">
+        <div className="text-blue-600">Loading data...</div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="w-full h-screen flex items-center justify-center">
+        <div className="text-red-600">Error: {error}</div>
+      </div>
+    );
+  }
+
+  if (!data || data.length === 0) {
+    return (
+      <div className="w-full h-screen flex items-center justify-center">
+        <div className="text-blue-600">No data available</div>
+        <pre>{JSON.stringify(data, null, 2)}</pre> {/* Добавьте этот вывод для отладки */}
+      </div>
+    );
+  }
 
   return (
     <div className="w-full space-y-4 bg-blue-500 p-2 sm:p-6 rounded-xl">
