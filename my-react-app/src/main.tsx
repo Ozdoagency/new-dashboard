@@ -1,10 +1,22 @@
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import './index.css'
-import App from './App.tsx'
+import React from 'react';
+import ReactDOM from 'react-dom';
+import App from './App';
+import './index.css';
+import MetricsDashboard from './components/MetricsDashboard'
 
-createRoot(document.getElementById('root')!).render(
-  <StrictMode>
+function App() {
+  return (
+    <div className="App">
+      <MetricsDashboard />
+    </div>
+  )
+}
+
+export default App
+
+ReactDOM.render(
+  <React.StrictMode>
     <App />
-  </StrictMode>,
-)
+  </React.StrictMode>,
+  document.getElementById('root')
+);
